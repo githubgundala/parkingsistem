@@ -28,11 +28,15 @@
         @routes
         <script src="{{ mix('js/app.js') }}" defer></script>
     </head>
-    <body>
+    <body class="@if (Request::segment(1) === 'dashboard')
+    hold-transition sidebar-mini layout-fixed
+    @else
+    hold-transition layout-top-nav
+    @endif">
         @inertia
 
-        @env ('local')
+        {{-- @env ('local')
             <script src="http://localhost:3000/browser-sync/browser-sync-client.js"></script>
-        @endenv
+        @endenv --}}
     </body>
 </html>

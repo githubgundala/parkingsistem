@@ -465,6 +465,11 @@
     </div>
 </template>
 
-<script></script>
+<script>
+export default {
+    methods: {},
+    mounted() {},
+};
+</script>
 
 <style scoped></style>
