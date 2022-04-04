@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-
+use App\http\middleware\IsAdmin;
+use App\http\middleware\IsOperator;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,17 +13,29 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+Route::get('/', 'Auth\LoginController@showLoginForm');
+
+Route::get('/maps', 'HomeController@index');
+
+Auth::routes();
+
+Route::group(['middleware' => IsAdmin::class], function () {
+    Route::resource('customer', 'CustomerController');
+    Route::post('/updateImgParking/{id}', 'CustomerController@updateImg');
+    Route::resource('role', 'RoleController');
+    Route::resource('pricing', 'PriceController');
+    Route::resource('kategori', 'KategoriController');
+    Route::resource('user', 'UserController');
+    Route::get('admin', 'UserController@dashboard');
+    Route::resource('userop', 'UserOPController');
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-require __DIR__.'/auth.php';
+Route::group(['middleware' => IsOperator::class], function () {
+    Route::post('/UpdatePass/{id}', 'OperatorController@UpdatePass');
+    Route::resource('transaksi', 'TransaksiController');
+    Route::get('/laporan', 'TransaksiController@laporan');
+    Route::post('/daily', 'TransaksiController@daily');
+    Route::post('/checkout_parking', 'TransaksiController@checkout');
+    Route::get('/operator/getHarga/{id}', 'TransaksiController@getHarga');
+    Route::resource('operator', 'OperatorController');
+});
